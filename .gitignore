@@ -6,3 +6,7 @@ Data/data/images/
 Data/data/images/*
 
 *.json
+
+/ModelSaves/
+ModelSaves/
+ModelSaves/*
