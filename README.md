@@ -22,3 +22,45 @@ https://www.goodreads.com/shelf/show/best-covers (6859 samples)
 Genres
 Descriptors (happy, sad, exciting, slow)
 Look at "Top Shelves"
+
+## Preliminary Results
+
+### ResNet-50
+
+#### Standard:
+Loss = 3.9193613529205322
+Test Accuracy = 0.628953754901886
+
+#### Oversampling
+Loss = 2.284522533416748
+Test Accuracy = 0.57351154088974
+
+#### Undersampling
+Loss = 1.7097039222717285
+Test Accuracy = 0.019441070035099983
+
+#### SMOTE
+Loss = 2.6277992725372314
+Test Accuracy = 0.6379100680351257
+
+#### Focal Loss (SigmoidFocalCrossEntropy)
+Loss = 0.181303933262825
+Test Accuracy = 0.6767922043800354
+
+#### Normalized
+Loss = 3.4941563606262207
+Test Accuracy = 0.6211936473846436
+
+#### Normalized with Focal Loss (SigmoidFocalCrossEntropy)
+Loss = 0.24491138756275177
+Test Accuracy = 0.6504263281822205
+
+### VGG16
+
+#### Standard
+Loss = 2.4211628437042236
+Test Accuracy = 0.6184689998626709
+
+#### Oversampling
+Loss = 5.077214241027832
+Test Accuracy = 0.6184689998626709
