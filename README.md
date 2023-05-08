@@ -50,35 +50,29 @@ For the initial scraping, I got my books from Goodreads’s ‘Best Books Ever�
 ### Data Exploration
 After accounting for books that did not have usable shelves or broken image links, I had a dataset of 3289 samples. This seemed to be a promisingly large sample size. However, upon further exploration, I found a serious issue.
 
-\begin{figure}[H]
+![Imbalance in favor of sadness](md_images/overall-bar.png "Bar graph showing number of samples per emotional category.")
+<!-- \begin{figure}[H]
     \begin{center}
      \includegraphics[width=0.8\linewidth]{overall_bar.png}
      \caption{Bar graph showing number of samples per emotional category.}
     \end{center}
  % \label{fig:imgA}
-\end{figure}
-\noindent As the graph shows, there are serious imbalances in the number of samples for each emotional category. Books labeled as sad make up the majority of the dataset, books tagged with ‘fear’ make up a majority of the books left, and so on.
+\end{figure} -->
+<!-- \noindent  -->
+As the graph shows, there are serious imbalances in the number of samples for each emotional category. Books labeled as sad make up the majority of the dataset, books tagged with ‘fear’ make up a majority of the books left, and so on.
 
-\subsection{Initial Approach}
+### Initial Approach
 Based on the related works that I had read, I decided to start by applying ResNet-50 to the classification problem to see how well the model would be able to predict the labels of the book cover data without major modifications. I also decided to experiment with VGG-16, a much larger CNN, to see how larger model sizes would affect performance.
-\newline
-\newline
-This led to the following results:
-\begin{center}
-\begin{tabular}{ | c | | c | c | c | }
-\hline
- & Test Accuracy	& Epoch Count & Time per Epoch \\
- \hline
-ResNet-50 & 0.6200607902735562 & 25 & 3005s\\
-\hline
-VGG-16 & 0.6231003039513677 & 25 & 1180s\\
-\hline
 
-\end{tabular}
-\end{center}
+This led to the following results:
+| | Test Accuracy	| Epoch Count | Time per Epoch |
+| ---------------- | --------------- | --------------- | ------------ |
+| ResNet-50 | 0.6200607902735562 | 25 |  3005 |
+| VGG-16  | 0.6231003039513677 | 25 & 1180 |
 
 I found little difference between the two models in overall accuracy. In addition, when looking at confusion matrices of the results:
 
+![ResNet-50 default results](md_images/overall-bar.png "Bar graph showing number of samples per emotional category.")
 \begin{figure}[H]
     \begin{center}
      \includegraphics[width=0.8\linewidth]{resnet1.png}
