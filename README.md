@@ -53,14 +53,7 @@ After accounting for books that did not have usable shelves or broken image link
 |![Imbalance in favor of sadness](md_images/overall-bar.png)|
 | ---- |
 |*Bar graph showing number of samples per emotional category.*|
-<!-- \begin{figure}[H]
-    \begin{center}
-     \includegraphics[width=0.8\linewidth]{overall_bar.png}
-     \caption{Bar graph showing number of samples per emotional category.}
-    \end{center}
- % \label{fig:imgA}
-\end{figure} -->
-<!-- \noindent  -->
+
 As the graph shows, there are serious imbalances in the number of samples for each emotional category. Books labeled as sad make up the majority of the dataset, books tagged with ‘fear’ make up a majority of the books left, and so on.
 
 ### Initial Approach
@@ -76,18 +69,8 @@ I found little difference between the two models in overall accuracy. In additio
 
 |![ResNet-50 default results](md_images/resnet50-1-norm.png)|![ResNet-50 default results](md_images/vgg16-1-norm.png)|
 | ---- | ---- |
-|Confusion matrix of ResNet-50 outputs.|Confusion matrix of VGG-16 outputs.|
-<!-- \begin{figure}[H]
-    \begin{center}
-     \includegraphics[width=0.8\linewidth]{resnet1.png}
-     \caption{Confusion matrix of ResNet-50 outputs.}
-     \includegraphics[width=0.8\linewidth]{vgg1.png}
-     \caption{Confusion matrix of VGG-16 outputs.}
-    \end{center}
- % \label{fig:imgA}
-\end{figure} -->
+|*Confusion matrix of ResNet-50 outputs.*|*Confusion matrix of VGG-16 outputs.*|
 
-<!-- \noindent  -->
 It seemed clear that the Sadness label was being selected too frequently.
 
  
@@ -131,27 +114,7 @@ The following are examples of classifications from the two-part model on the tes
 
 |![Happiness book](md_images/book-happy.png)|![Sadness book](md_images/book-sad.png)|![Fear book](md_images/book-fear.png)|
 | ---- | ---- | ---- |
-|Goodreads-derived emotion: Happiness, Predicted emotion: Happiness|Goodreads-derived emotion: Sadness, Predicted emotion: Sadness|Goodreads-derived emotion: Fear, Predicted emotion: Fear|
-<!-- \begin{figure}[H]
-    \begin{center}
-     \includegraphics[width=0.8\linewidth]{book-happy.png}
-     \caption{Goodreads-derived emotion: Happiness, Predicted emotion: Happiness}
-    \end{center}
-\end{figure}
-
-\begin{figure}[H]
-    \begin{center}
-     \includegraphics[width=0.8\linewidth]{book-sad.png}
-     \caption{Goodreads-derived emotion: Sadness, Predicted emotion: Sadness}
-    \end{center}
-\end{figure}
-
-\begin{figure}[H]
-    \begin{center}
-     \includegraphics[width=0.8\linewidth]{book-fear.png}
-     \caption{Goodreads-derived emotion: Fear, Predicted emotion: Fear}
-    \end{center}
-\end{figure} -->
+|Goodreads-derived emotion: Happiness<br />Predicted emotion: Happiness|Goodreads-derived emotion: Sadness<br />Predicted emotion: Sadness|Goodreads-derived emotion: Fear<br />Predicted emotion: Fear|
 
 ## Reflection and Next Steps
 
