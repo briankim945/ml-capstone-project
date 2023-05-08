@@ -50,7 +50,9 @@ For the initial scraping, I got my books from Goodreads’s ‘Best Books Ever�
 ### Data Exploration
 After accounting for books that did not have usable shelves or broken image links, I had a dataset of 3289 samples. This seemed to be a promisingly large sample size. However, upon further exploration, I found a serious issue.
 
-![Imbalance in favor of sadness](md_images/overall-bar.png "Bar graph showing number of samples per emotional category.")
+|![Imbalance in favor of sadness](md_images/overall-bar.png)|
+| ---- |
+|*Bar graph showing number of samples per emotional category.*|
 <!-- \begin{figure}[H]
     \begin{center}
      \includegraphics[width=0.8\linewidth]{overall_bar.png}
@@ -72,8 +74,10 @@ This led to the following results:
 
 I found little difference between the two models in overall accuracy. In addition, when looking at confusion matrices of the results:
 
-![ResNet-50 default results](md_images/overall-bar.png "Bar graph showing number of samples per emotional category.")
-\begin{figure}[H]
+|![ResNet-50 default results](md_images/resnet50-1-norm.png)|![ResNet-50 default results](md_images/vgg16-1-norm.png)|
+| ---- | ---- |
+|Confusion matrix of ResNet-50 outputs.|Confusion matrix of VGG-16 outputs.|
+<!-- \begin{figure}[H]
     \begin{center}
      \includegraphics[width=0.8\linewidth]{resnet1.png}
      \caption{Confusion matrix of ResNet-50 outputs.}
@@ -81,56 +85,90 @@ I found little difference between the two models in overall accuracy. In additio
      \caption{Confusion matrix of VGG-16 outputs.}
     \end{center}
  % \label{fig:imgA}
-\end{figure}
+\end{figure} -->
 
-\noindent It seemed clear that the Sadness label was being selected too frequently.
+<!-- \noindent  -->
+It seemed clear that the Sadness label was being selected too frequently.
 
  
-\subsection{Responding to Data Imbalances}
+### Responding to Data Imbalances
 I first approached the problem of resolving the data imbalances by applying undersampling, oversampling, and the Synthetic Minority Oversampling Technique (SMOTE). Undersampling is a technique to balance data by keeping all samples in minority classes and getting rid of samples in large classes. Oversampling seeks to do the opposite by introducing more samples to the minority classes. In my case, I randomly sampled from the existing minority classes with replacement to get a more even distribution of data. Finally, SMOTE is a specialized oversampling technique synthesizes new samples from existing samples, effectively creating more data points based on the old ones.
-\newline
-\newline
+
 In addition to trying to fix problems in the data, I tried to tailor the models to be more responsive to the differences in the data distribution. In my case, I applied focal loss – particularly Focal Cross Entropy Loss – to get the model to weight incorrect predictions for minority classes more heavily.
-\newline
-\newline
+
 Finally, I tried to alter the plan more thoroughly in response to the problems I ran into. Based on the results of my previous experimentation, I created a more complex prediction process. I first turned the problem from a multiclass classification into a binary classification problem, only predicting if a book was tagged as sad or not sad. For the books tagged as not sad, I then created another model to predict if they were classified fear or happiness. I dropped disgust and anger entirely, since there were so few in the dataset. This created a two-model pipeline for predicting whether a book is sad, happy, or scary.
 
-### ResNet-50
+## Results
 
-#### Standard:
-Loss = 3.9193613529205322
-Test Accuracy = 0.628953754901886
+My overall results for each model that I tested are below:
 
-#### Oversampling
-Loss = 2.284522533416748
-Test Accuracy = 0.57351154088974
+| | ResNet-50 | ResNet-50 (Undersampled) | ResNet-50 (Oversampled) | ResNet-50 (SMOTE) | ResNet-50 (Normalized) | ResNet-50 (Focal Loss) | VGG-16 | VGG-16 (Oversampled) |
+| -- | -- | -- | -- | -- | -- | -- | -- | -- |
+| Test Accuracy | 0.5623100303951368 | 0.0060790273556231 | 0.5835866261398176 | 0.6200607902735562 | 0.6443768996960486 | 0.7021276595744681 | 0.6231003039513677 | 0.601823708206687 |
+| Sadness Accuracy | 0.7272727272727273 | 0.004329004329004329 | 0.7619047619047619 |  0.8484848484848485 | 0.8961038961038961 | 1.0 | 0.8441558441558441 | 0.8225108225108225 |
+| Fear Accuracy | 0.2318840579710145 | 0.0 | 0.2028985507246377 |  0.10144927536231885 | 0.07246376811594203 | 0.0| 0.14492753623188406 | 0.10144927536231885|
+| Happiness Accuracy | 0.038461538461538464 | 0.0 | 0.07692307692307693 | 0.038461538461538464 |  0.0 | 0.0 | 0.0 | 0.038461538461538464 |
+| Disgust Accuracy | 0.0 | 0.0 | 0.0 | 0.0 |  0.0 | 0.0 | 0.0 | 0.0 |
+| Anger Accuracy | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
 
-#### Undersampling
-Loss = 1.7097039222717285
-Test Accuracy = 0.019441070035099983
+Looking at the accuracy scores, it seems apparent that the models lean towards applying ‘sadness’ to every category as much as possible, even when attempting to rebalance the dataset. Undersampling is by far the weakest approach, completely damaging any possible training on the model. Oversampling and SMOTE seem to do much better, while focal loss results in net improvement at the expense of any category that is not ‘sadness.’ SMOTE and normalization seem to have been the most successful at both overall accuracy and improving individual category accuracies.
 
-#### SMOTE
-Loss = 2.6277992725372314
-Test Accuracy = 0.6379100680351257
+Based on these results, I decided to construct my final model from ResNet-50 using a focal loss function and applying SMOTE to the data. As discussed previously, I dropped the disgust and anger samples, and divided the problem into two binary classification problems. I first trained one model to decide between ‘sad’ and ‘not-sad’ samples, and I trained another model to determine, within the ‘not-sad’ samples, between ‘fear’ and ‘happy’ samples. The results are below:
 
-#### Focal Loss (SigmoidFocalCrossEntropy)
-Loss = 0.181303933262825
-Test Accuracy = 0.6767922043800354
+| | ResNet-50 |
+| -- | -- |
+| Test Accuracy | 0.9513677811550152 |
+| Sadness Accuracy | 0.9783549783549783 |
+| Fear Accuracy | 0.9420289855072463 |
+| Happiness Accuracy | 0.8461538461538461 |
 
-#### Normalized
-Loss = 3.4941563606262207
-Test Accuracy = 0.6211936473846436
+These results were extremely gratifying, as they showed the models finally demonstrating meaningful improvements in their ability to predict ‘fear’ and ‘happy’ samples without being swamped by ‘sad’ samples. This is particularly clear in when illustrated through confusion matrices.
 
-#### Normalized with Focal Loss (SigmoidFocalCrossEntropy)
-Loss = 0.24491138756275177
-Test Accuracy = 0.6504263281822205
 
-### VGG16
+### Sample Predictions
 
-#### Standard
-Loss = 2.4211628437042236
-Test Accuracy = 0.6184689998626709
+The following are examples of classifications from the two-part model on the testing dataset.
 
-#### Oversampling
-Loss = 5.077214241027832
-Test Accuracy = 0.6184689998626709
+|![Happiness book](md_images/book-happy.png)|![Sadness book](md_images/book-sad.png)|![Fear book](md_images/book-fear.png)|
+| ---- | ---- | ---- |
+|Goodreads-derived emotion: Happiness, Predicted emotion: Happiness|Goodreads-derived emotion: Sadness, Predicted emotion: Sadness|Goodreads-derived emotion: Fear, Predicted emotion: Fear|
+<!-- \begin{figure}[H]
+    \begin{center}
+     \includegraphics[width=0.8\linewidth]{book-happy.png}
+     \caption{Goodreads-derived emotion: Happiness, Predicted emotion: Happiness}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+     \includegraphics[width=0.8\linewidth]{book-sad.png}
+     \caption{Goodreads-derived emotion: Sadness, Predicted emotion: Sadness}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+     \includegraphics[width=0.8\linewidth]{book-fear.png}
+     \caption{Goodreads-derived emotion: Fear, Predicted emotion: Fear}
+    \end{center}
+\end{figure} -->
+
+## Reflection and Next Steps
+
+I am very surprised at the effectiveness of my final two-model process, and I made sure to reverse-search the results to make sure that I had not accidentally produced incorrect results.
+
+The ‘sadness’ category remained the most easily identifiable category for the model, which makes sense, since that was always the largest category. Then, between ‘fear’ and ‘happiness’, the model was significantly more accurate with ‘fear’ than with ‘happiness,’ again performing better with the larger sample size.
+
+Overall, the results seem to indicate that there are recognizable differences between the cover images for books, as categorized by users based on the emotional responses those books elicited from them. However, while my double-binary-classification approach yielded interesting results, I do not think that this is an easily scalable approach for wider image classification of sentiment analysis problems. As a result, I want to explore some possibilities on how I would improve and expand this project if I were still working on it.
+
+The first thing that I would do is try to expand the dataset. To get my final results, I had to drop two emotional categories, and one – ‘surprise’ – I simply never found any samples for in my initial scrape. In the future, I might deliberately get a wider sample of data and collect the most popular responses for each category, rather than getting the most popular books and categorizing them afterwards.
+
+It would also be possible to provide a more complex distribution of book inputs. For instance, a more detailed analysis of user tags on Goodreads might provide inputs on how many users tagged a book for each category. This could be used to create a dataset where every book has a ‘score’ for how strongly the book is associated with each emotional category, allowing for more nuanced training and outputs by the model.
+
+Of course, it would also be useful to get information on books from other sources. Amazon, for instance, has a similarly large book database, and it might also be possible to create judgments of books based on reviews by professional reviewers.
+
+In terms of the models used, I am quite happy with the performance of ResNet-50, but further iterations with ResNet models, along with versions of VGG and non-CNN models, would be worth exploring.
+
+Finally, I believe that the scope of this project could be further expanded. It might be possible, for instance, to include more complexity in the emotional labels, such as entirely new emotions like whimsical and unsettling; I also thought that this might be applicable to movie posters, which have many of the same qualities as book covers since they are both trying to give viewers a sense of 'inner' content.
+
+Ultimately, I believe that this project shows that there is potential in machine learning to apply sentiment analysis to non-text data samples. Images are not just representations of objects but are frequently designed to provide emotional experiences and elicit certain responses in viewers; this is what makes painting, photography, and drawing all art forms. I expect that applying developments in image classification will provide a way forward to identify the feelings in images as well as the shapes.
